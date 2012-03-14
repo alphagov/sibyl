@@ -118,6 +118,20 @@ describe "Parser" do
     assert_equal expected, actual
   end
 
+  it "should parse a set block" do
+    actual = Sibyl.parse(%{
+      step any a
+        set foo_bar { input }
+    })
+
+    expected = [
+      [:step, "any", "a", [
+        [:set, "foo_bar", "input"]]]]
+
+    assert_equal expected, actual
+  end
+
+
   it "should ignore a comment inside a unit" do
     actual = Sibyl.parse(%{
       step any a
