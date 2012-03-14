@@ -1,0 +1,77 @@
+metadata need 1660
+metadata section family
+metadata subsection maternity-and-paternity
+metadata status published
+
+step date "when is your baby due?"
+  set due_date { input }
+  set expected_week_of_childbirth {
+    due_on = Date.parse(due_date)
+    start = due_on - due_on.wday
+    start .. start + 6.days
+  }
+  set qualifying_week {
+    start = expected_week_of_childbirth.first - 15.weeks
+    start .. start + 6.days
+  }
+  set start_of_qualifying_week {
+    qualifying_week.first
+  }
+  set start_of_test_period {
+    qualifying_week.first - 51.weeks
+  }
+  set end_of_test_period {
+    expected_week_of_childbirth.first - 1.day
+  }
+  set twenty_six_weeks_before_qualifying_week {
+    qualifying_week.first - 26.weeks
+  }
+  go -> "are you employed?"
+
+step multiple "are you employed?"
+  option yes -> "did you start 26 weeks before qualifying week?"
+  option no  -> "will you work at least 26 weeks during test period?"
+
+step multiple "did you start 26 weeks before qualifying week?"
+  -- We assume that if they are employed, that means they are
+  -- employed *today* and if today is after the start of the qualifying
+  -- week we can skip that question
+  option yes ->
+    if { today < start_of_qualifying_week } ->
+      "will you still be employed in qualifying week?"
+    otherwise ->
+      "how much are you paid?"
+  -- If they weren't employed 26 weeks before qualifying week, there's no
+  -- way they can qualify for SMP, so consider MA instead.
+  option no -> "will you work at least 26 weeks during test period?"
+
+step multiple "will you still be employed in qualifying week?"
+  option yes -> "how much are you paid?"
+  option no  -> "will you work at least 26 weeks during test period?"
+
+-- Note this is only reached for 'employed' people who
+-- have worked 26 weeks for the same employer
+step salary "how much are you paid?"
+  go ->
+    if { input.per_week >= 102 } ->
+      "you qualify for statutory maternity pay"
+    if { input.per_week >= 30 } ->
+      "you qualify for maternity allowance"
+    otherwise -> "nothing maybe benefits"
+
+step multiple "will you work at least 26 weeks during test period?"
+  reject { input == "yes" && weekly_salary && weekly_salary >= 30 }
+  option yes ->
+    if { weekly_salary } -> "you qualify for maternity allowance"
+    otherwise -> "how much do you earn?"
+  option no -> "nothing maybe benefits"
+
+step salary "how much do you earn?"
+  go ->
+    if { per_week >= 30 } -> "you qualify for maternity allowance"
+    otherwise -> "nothing maybe benefits"
+
+outcome "nothing maybe benefits"
+outcome "you qualify for statutory maternity pay"
+outcome "you qualify for maternity allowance"
+outcome "maybe maternity allowance"
