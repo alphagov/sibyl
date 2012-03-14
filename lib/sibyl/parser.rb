@@ -53,8 +53,11 @@ module Sibyl
     rule(:metadata) {
       str('metadata').as(:type) >> s? >> string.as(:key) >> value.as(:value)
     }
+    rule(:empty) {
+      s?.as(:empty)
+    }
     rule(:document) {
-      (step | outcome | metadata).repeat
+      s? >> (step | outcome | metadata).repeat(1) | empty
     }
     root(:document)
   end

@@ -5,6 +5,7 @@ module Sibyl
     rule(text: simple(:x)) { x.to_s }
     rule(numeric: simple(:x)) { x.to_i }
     rule(code: simple(:x)) { x.to_s.strip }
+    rule(empty: simple(:x)) { [] }
     rule(type: 'if', expr: simple(:expr), target: simple(:target)) {
       [:if, expr, target]
     }

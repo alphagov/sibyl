@@ -96,6 +96,15 @@ describe "Parser" do
     assert_equal expected, actual
   end
 
+  it "should parse an empty document" do
+    actual = Sibyl.parse(%{
+    })
+
+    expected = []
+
+    assert_equal expected, actual
+  end
+
   it "should ignore a comment inside a unit" do
     actual = Sibyl.parse(%{
       step multiple a
