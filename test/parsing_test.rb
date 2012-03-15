@@ -1,9 +1,16 @@
 require "common"
-require "sibyl"
+require "sibyl/parser"
+require "sibyl/transform"
 
 describe "Parser" do
+  def sexp(source)
+    parser = Sibyl::Parser.new
+    transform = Sibyl::Transform.new
+    transform.apply(parser.parse(source))
+  end
+
   it "should parse a metadata line with a number" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       metadata need 1660
     })
 
@@ -13,7 +20,7 @@ describe "Parser" do
   end
 
   it "should parse a metadata line with a word" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       metadata foo bar-baz
     })
 
@@ -23,7 +30,7 @@ describe "Parser" do
   end
 
   it "should parse a metadata line with a string" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       metadata foo "bar baz"
     })
 
@@ -33,7 +40,7 @@ describe "Parser" do
   end
 
   it "should parse a simple multiple option step" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       step multiple a
         option yes -> b
         option no  -> c
@@ -48,7 +55,7 @@ describe "Parser" do
   end
 
   it "should parse a multiple option step with logic" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       step multiple a
         option yes ->
           if { logic } -> b
@@ -67,7 +74,7 @@ describe "Parser" do
   end
 
   it "should parse a step with a simple direct transition" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       step salary a
         go -> b
     })
@@ -80,7 +87,7 @@ describe "Parser" do
   end
 
   it "should parse a step with a direct transition with logic" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       step salary a
         go ->
           if { logic } -> b
@@ -97,7 +104,7 @@ describe "Parser" do
   end
 
   it "should parse an empty document" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
     })
 
     expected = []
@@ -106,7 +113,7 @@ describe "Parser" do
   end
 
   it "should parse a reject block" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       step any a
         reject { logic }
     })
@@ -119,7 +126,7 @@ describe "Parser" do
   end
 
   it "should parse a set block" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       step any a
         set foo_bar { input }
     })
@@ -133,7 +140,7 @@ describe "Parser" do
 
 
   it "should ignore a comment inside a unit" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       step any a
         -- ignore me
         go -> b
@@ -147,7 +154,7 @@ describe "Parser" do
   end
 
   it "should ignore a comment before a unit" do
-    actual = Sibyl.parse(%{
+    actual = sexp(%{
       -- ignore me
       metadata foo bar
     })
