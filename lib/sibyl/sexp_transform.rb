@@ -1,7 +1,7 @@
 require "parslet"
 
 module Sibyl
-  class Transform < Parslet::Transform
+  class SexpTransform < Parslet::Transform
     rule(text: simple(:x)) { x.to_s }
     rule(numeric: simple(:x)) { x.to_i }
     rule(code: simple(:x)) { x.to_s.strip }

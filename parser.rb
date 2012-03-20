@@ -1,5 +1,9 @@
-require "sibyl"
+require "sibyl/parser"
+require "sibyl/sexp_transform"
 require 'pp'
 
-s = File.read(ARGV.first)
-pp Sibyl.parse(s)
+source = File.read(ARGV.first)
+parser = Sibyl::Parser.new
+sexp_transform = Sibyl::SexpTransform.new
+sexp = sexp_transform.apply(parser.parse(source))
+pp sexp

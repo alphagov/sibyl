@@ -1,11 +1,11 @@
 require "common"
 require "sibyl/parser"
-require "sibyl/transform"
+require "sibyl/sexp_transform"
 
 describe "Parser" do
   def sexp(source)
     parser = Sibyl::Parser.new
-    transform = Sibyl::Transform.new
+    transform = Sibyl::SexpTransform.new
     transform.apply(parser.parse(source))
   end
 
