@@ -10,28 +10,28 @@ module Sibyl
     rule(code: simple(:x)) { x.to_s.strip }
     rule(empty: simple(:x)) { [] }
     rule(type: 'if', expr: simple(:expr), target: simple(:target)) {
-      GoIf.new(expr, target)
+      ConditionalJump.new(expr, target)
     }
     rule(type: 'set', var: simple(:var), expr: simple(:expr)) {
       Set.new(var, expr)
     }
     rule(type: 'otherwise', target: simple(:target)) {
-      Go.new(target)
+      Jump.new(target)
     }
     rule(type: 'branch', branch: subtree(:branch), from: simple(:from)) {
-      Option.new(from, branch)
+      OptionBrancher.new(from, branch)
     }
     rule(type: 'option', branch: subtree(:branch), from: simple(:from)) {
-      Option.new(from, branch)
+      OptionBrancher.new(from, branch)
     }
     rule(type: 'option', target: simple(:target), from: simple(:from)) {
-      Option.new(from, [Go.new(target)])
+      OptionBrancher.new(from, [Jump.new(target)])
     }
     rule(type: 'go', branch: subtree(:branch)) {
-      Always.new(branch)
+      Brancher.new(branch)
     }
     rule(type: 'go', target: simple(:target)) {
-      Always.new([Go.new(target)])
+      Brancher.new([Jump.new(target)])
     }
     rule(type: 'reject', expr: simple(:expr)) {
       Reject.new(expr)

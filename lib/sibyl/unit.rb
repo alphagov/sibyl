@@ -13,23 +13,27 @@ module Sibyl
 
           attr_accessor *fields
         end
+
+        def def_boolean(value, *names)
+          names.each do |name|
+            class_eval <<-END
+              def #{name}?
+                #{value ? "true" : "false"}
+              end
+            END
+          end
+        end
+
+        def def_true(*names)
+          def_boolean true, *names
+        end
+
+        def def_false(*names)
+          def_boolean false, *names
+        end
       end
 
-      def metadata?
-        false
-      end
-
-      def option?
-        false
-      end
-
-      def statement?
-        false
-      end
-
-      def metadata?
-        false
-      end
+      def_false :metadata, :option, :statement, :step, :sink
     end
 
     class Declaration < Element
@@ -46,14 +50,12 @@ module Sibyl
 
     class Metadata < Declaration
       construct_with :key, :value
-
-      def metadata?
-        true
-      end
+      def_true :metadata
     end
 
     class Step < Node
       construct_with :type, :name, :body
+      def_true :step
 
       def options
         body.select(&:option?)
@@ -84,11 +86,16 @@ module Sibyl
       end
     end
 
-    class Outcome < Node
+    class Outcome < Step
       construct_with :name
+      def_true :sink
+
+      def exits
+        []
+      end
     end
 
-    class Go < Node
+    class Jump < Node
       construct_with :target
 
       def compute(*)
@@ -96,7 +103,7 @@ module Sibyl
       end
     end
 
-    class GoIf < Go
+    class ConditionalJump < Jump
       include Evaluable
       construct_with :expression, :target
 
@@ -109,8 +116,9 @@ module Sibyl
       end
     end
 
-    class Always < Node
+    class Brancher < Node
       construct_with :branches
+      def_true :option
 
       def compute(context)
         branches.each do |b|
@@ -119,13 +127,9 @@ module Sibyl
         end
         nil
       end
-
-      def option?
-        true
-      end
     end
 
-    class Option < Always
+    class OptionBrancher < Brancher
       construct_with :text, :branches
 
       def compute(context)
@@ -137,26 +141,21 @@ module Sibyl
       end
     end
 
-    class Set < Node
+    class AbstractStatement < Node
       include Evaluable
-      construct_with :key, :expression
+      def_true :statement
+    end
 
-      def statement?
-        true
-      end
+    class Set < AbstractStatement
+      construct_with :key, :expression
 
       def execute(context)
         context.__send__ "#{key}=", evaluate(context)
       end
     end
 
-    class Reject < Node
-      include Evaluable
+    class Reject < AbstractStatement
       construct_with :expression
-
-      def statement?
-        true
-      end
 
       def execute(context)
         raise ValidationError if evaluate(context)
