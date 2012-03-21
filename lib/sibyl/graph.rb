@@ -10,6 +10,10 @@ module Sibyl
       @metadata = extract_metadata(elements)
     end
 
+    def valid?
+      true
+    end
+
   private
     def parse(source)
       parser = Sibyl::Parser.new

@@ -84,6 +84,10 @@ module Sibyl
       end
     end
 
+    class Outcome < Node
+      construct_with :name
+    end
+
     class Go < Node
       construct_with :target
 
