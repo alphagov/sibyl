@@ -44,4 +44,17 @@ describe "Graph validation" do
 
     refute g.valid?
   end
+
+  it "should be invalid if there are cycles" do
+    g = graph(%{
+      step option a
+        option foo -> b
+        option bar -> c
+      step number b
+        go -> a
+      outcome c
+    })
+
+    refute g.valid?
+  end
 end
