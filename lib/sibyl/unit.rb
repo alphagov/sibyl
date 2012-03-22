@@ -33,7 +33,7 @@ module Sibyl
         end
       end
 
-      def_false :metadata, :option, :statement, :step, :sink
+      def_false :metadata, :option, :statement, :step, :sink, :branch
     end
 
     class Declaration < Element
@@ -57,8 +57,8 @@ module Sibyl
       construct_with :type, :name, :body
       def_true :step
 
-      def options
-        body.select(&:option?)
+      def branches
+        body.select(&:branch?)
       end
 
       def statements
@@ -66,11 +66,11 @@ module Sibyl
       end
 
       def inputs
-        options.map(&:text)
+        body.select(&:option?).map(&:text)
       end
 
       def exits
-        body.select(&:option?).map(&:branches).flatten.map(&:target).uniq
+        branches.map(&:branches).flatten.map(&:target).uniq
       end
 
       def compute(input, context)
@@ -78,11 +78,24 @@ module Sibyl
         statements.each do |s|
           s.execute(context)
         end
-        options.each do |o|
+        branches.each do |o|
           result = o.compute(context)
           return result if result
         end
         raise ValidationError
+      end
+
+      def l10n_keys
+        prefix = keyify(name)
+        standard = ["#{prefix}.title"]
+        body.select(&:option?).inject(standard) { |keys, option|
+          keys << "#{prefix}.options.#{option.text}"
+        }
+      end
+
+    private
+      def keyify(s)
+        s.downcase.gsub(/^\W+|\W+$/, "").gsub(/\W+/, "_")
       end
     end
 
@@ -91,6 +104,10 @@ module Sibyl
       def_true :sink
 
       def exits
+        []
+      end
+
+      def body
         []
       end
     end
@@ -118,7 +135,7 @@ module Sibyl
 
     class Brancher < Node
       construct_with :branches
-      def_true :option
+      def_true :branch
 
       def compute(context)
         branches.each do |b|
@@ -131,6 +148,7 @@ module Sibyl
 
     class OptionBrancher < Brancher
       construct_with :text, :branches
+      def_true :option
 
       def compute(context)
         if context.input == text

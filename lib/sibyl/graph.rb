@@ -17,6 +17,12 @@ module Sibyl
       !has_unresolved_targets?
     end
 
+    def l10n_keys
+      @steps.inject([]) { |keys, step|
+        keys + step.l10n_keys
+      }
+    end
+
   private
     def has_unreachable_steps?
       (step_names - target_names - [@steps.first.name]).any?
