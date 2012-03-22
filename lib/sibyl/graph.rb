@@ -1,3 +1,4 @@
+require "sibyl/errors"
 require "sibyl/parser"
 require "sibyl/ruby_transform"
 require "tsort"
@@ -16,11 +17,16 @@ module Sibyl
       @steps_by_name = Hash[@steps.map { |s| [s.name, s] }]
     end
 
-    def valid?
-      @steps.any? &&
-      !has_unreachable_steps? &&
-      !has_unresolved_targets? &&
-      !has_cycles?
+    def validate!
+      validate_has_steps!
+      @steps.each do |step|
+        step.validate!
+      end
+      validate_no_unreachable_steps!
+      validate_no_unresolved_targets!
+      validate_no_cycles!
+    rescue InvalidNode => e
+      raise InvalidGraph.new(e)
     end
 
     def l10n_keys
@@ -30,19 +36,30 @@ module Sibyl
     end
 
   private
-    def has_unreachable_steps?
-      (step_names - target_names - [first_step_name]).any?
+    def validate_has_steps!
+      if @steps.empty?
+        raise InvalidGraph, "no steps"
+      end
     end
 
-    def has_unresolved_targets?
-      (target_names - step_names).any?
+    def validate_no_unreachable_steps!
+      unreachable = step_names - target_names - [first_step_name]
+      if unreachable.any?
+        raise InvalidGraph, "unreachable step(s): #{unreachable.join("; ")}"
+      end
     end
 
-    def has_cycles?
+    def validate_no_unresolved_targets!
+      unresolved = target_names - step_names
+      if unresolved.any?
+        raise InvalidGraph, "unresolved step(s): #{unresolved.join("; ")}"
+      end
+    end
+
+    def validate_no_cycles!
       tsort
-      false
     rescue TSort::Cyclic
-      true
+      raise InvalidGraph, "graph is cyclic"
     end
 
     def first_step_name

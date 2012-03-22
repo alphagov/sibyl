@@ -61,6 +61,10 @@ module Sibyl
         body.select(&:branch?)
       end
 
+      def options
+        body.select(&:option?)
+      end
+
       def statements
         body.select(&:statement?)
       end
@@ -82,15 +86,23 @@ module Sibyl
           result = o.compute(context)
           return result if result
         end
-        raise ValidationError
+        raise InvalidInput
       end
 
       def l10n_keys
         prefix = keyify(name)
         standard = ["#{prefix}.title"]
-        body.select(&:option?).inject(standard) { |keys, option|
-          keys << "#{prefix}.options.#{option.text}"
-        }
+        standard + options.map { |option| "#{prefix}.options.#{option.text}" }
+      end
+
+      def validate!
+        if type.to_s == "option"
+          raise InvalidNode, "option step '#{name}' has no options" if options.none?
+          raise InvalidNode, "option step '#{name}' has non-option branches" if (branches - options).any?
+        else
+          raise InvalidNode, "non-option step '#{name}' has options" if options.any?
+          raise InvalidNode, "step '#{name}' has no outputs" if branches.none?
+        end
       end
 
     private
@@ -109,6 +121,9 @@ module Sibyl
 
       def body
         []
+      end
+
+      def validate!
       end
     end
 
@@ -176,7 +191,7 @@ module Sibyl
       construct_with :expression
 
       def execute(context)
-        raise ValidationError if evaluate(context)
+        raise PreconditionFailed if evaluate(context)
       end
     end
   end

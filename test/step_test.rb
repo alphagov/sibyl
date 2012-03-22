@@ -130,7 +130,7 @@ describe "Step" do
         go -> b
     })
 
-    assert_raises Sibyl::ValidationError do
+    assert_raises Sibyl::PreconditionFailed do
       step.compute(2, OpenStruct.new)
     end
     assert_equal "b", step.compute(1, OpenStruct.new)
@@ -143,7 +143,7 @@ describe "Step" do
         option bar -> c
     })
 
-    assert_raises Sibyl::ValidationError do
+    assert_raises Sibyl::InvalidInput do
       step.compute "baz", OpenStruct.new
     end
   end

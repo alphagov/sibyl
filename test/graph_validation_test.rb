@@ -13,7 +13,7 @@ describe "Graph validation" do
       outcome b
     })
 
-    assert g.valid?
+    g.validate!
   end
 
   it "should be invalid if a step is unreachable" do
@@ -25,7 +25,9 @@ describe "Graph validation" do
       outcome c
     })
 
-    refute g.valid?
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
   end
 
   it "should be invalid if a target is unresolved" do
@@ -36,13 +38,17 @@ describe "Graph validation" do
       outcome b
     })
 
-    refute g.valid?
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
   end
 
   it "should be invalid if there are no steps" do
     g = graph("")
 
-    refute g.valid?
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
   end
 
   it "should be invalid if there are cycles" do
@@ -55,6 +61,57 @@ describe "Graph validation" do
       outcome c
     })
 
-    refute g.valid?
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
+  end
+
+  it "should be invalid if a multiple step has no options" do
+    g = graph(%{
+      step number a
+        go -> c
+      step option b
+      outcome c
+    })
+
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
+  end
+
+  it "should be invalid if a multiple step has a go" do
+    g = graph(%{
+      step option a
+        option foo -> b
+        go -> c
+      outcome b
+      outcome c
+    })
+
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
+  end
+
+  it "should be invalid if a non-multiple step has options" do
+    g = graph(%{
+      step number a
+        option foo -> b
+      outcome b
+    })
+
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
+  end
+
+  it "should be invalid if a step has no go declarations" do
+    g = graph(%{
+      step number a
+    })
+
+    assert_raises Sibyl::InvalidGraph do
+      g.validate!
+    end
   end
 end
