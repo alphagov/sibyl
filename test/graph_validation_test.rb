@@ -32,7 +32,7 @@ describe "Graph validation" do
 
   it "should be invalid if a target is unresolved" do
     g = graph(%{
-      step option a
+      step multiple a
         option foo -> b
         option bar -> c
       outcome b
@@ -53,7 +53,7 @@ describe "Graph validation" do
 
   it "should be invalid if there are cycles" do
     g = graph(%{
-      step option a
+      step multiple a
         option foo -> b
         option bar -> c
       step number b
@@ -70,7 +70,7 @@ describe "Graph validation" do
     g = graph(%{
       step number a
         go -> c
-      step option b
+      step multiple b
       outcome c
     })
 
@@ -81,7 +81,7 @@ describe "Graph validation" do
 
   it "should be invalid if a multiple step has a go" do
     g = graph(%{
-      step option a
+      step multiple a
         option foo -> b
         go -> c
       outcome b

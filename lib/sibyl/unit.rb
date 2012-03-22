@@ -96,11 +96,11 @@ module Sibyl
       end
 
       def validate!
-        if type.to_s == "option"
-          raise InvalidNode, "option step '#{name}' has no options" if options.none?
-          raise InvalidNode, "option step '#{name}' has non-option branches" if (branches - options).any?
+        if type.to_s == "multiple"
+          raise InvalidNode, "multiple step '#{name}' has no options" if options.none?
+          raise InvalidNode, "multiple step '#{name}' has non-option branches" if (branches - options).any?
         else
-          raise InvalidNode, "non-option step '#{name}' has options" if options.any?
+          raise InvalidNode, "non-multiple step '#{name}' has options" if options.any?
           raise InvalidNode, "step '#{name}' has no outputs" if branches.none?
         end
       end
