@@ -29,6 +29,16 @@ module Sibyl
       raise InvalidGraph.new(e)
     end
 
+    def at(inputs)
+      step = @first_step
+      context = OpenStruct.new
+      inputs.each do |input|
+        result = step.compute(input, context)
+        step = @steps_by_name[result]
+      end
+      step
+    end
+
     def l10n_keys
       @steps.inject([]) { |keys, step|
         keys + step.l10n_keys

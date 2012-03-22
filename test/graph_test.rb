@@ -19,4 +19,22 @@ describe "Graph validation" do
 
     assert_equal expected, g.metadata
   end
+
+  it "should walk the nodes according to inputs" do
+    g = graph(%{
+      step multiple "Yes or no?"
+        option yes -> "How old are you?"
+        option no -> "Whatever"
+      step number "How old are you?"
+        go ->
+          if { input > 18 } -> "Adult"
+          otherwise -> "Child"
+      outcome "Whatever"
+      outcome "Adult"
+      outcome "Child"
+    })
+
+    assert_equal "How old are you?", g.at(["yes"]).name
+    assert_equal "Adult", g.at(["yes", 19]).name
+  end
 end
