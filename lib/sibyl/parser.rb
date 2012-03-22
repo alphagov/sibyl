@@ -26,8 +26,11 @@ module Sibyl
     rule(:branch_otherwise) {
       str('otherwise').as(:type) >> s? >> arrow >> target
     }
+    rule(:braced) {
+      ((str('{') >> braced >> str('}')) | match('[^}]')).repeat
+    }
     rule(:code) {
-      str('{') >> match('[^}]').repeat.as(:code) >> str('}') >> s?
+      str('{') >> braced.as(:code) >> str('}') >> s?
     }
     rule(:stepdef) {
       str('step').as(:type) >> s? >> string.as(:subtype) >> string.as(:name)

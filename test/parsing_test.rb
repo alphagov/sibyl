@@ -138,6 +138,18 @@ describe "Parser" do
     assert_equal expected, actual
   end
 
+  it "should ignore paired {} inside an expression" do
+    actual = sexp(%{
+      step any a
+        set foo_bar { foo.map { |a| a } }
+    })
+
+    expected = [
+      [:step, "any", "a", [
+        [:set, "foo_bar", "foo.map { |a| a }"]]]]
+
+    assert_equal expected, actual
+  end
 
   it "should ignore a comment inside a unit" do
     actual = sexp(%{
