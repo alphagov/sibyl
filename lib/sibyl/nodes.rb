@@ -1,8 +1,8 @@
 require "sibyl/errors"
 
 module Sibyl
-  module Unit
-    class Element
+  module Nodes
+    class Node
       class << self
         def construct_with(*fields)
           class_eval <<-END
@@ -36,19 +36,13 @@ module Sibyl
       def_false :metadata, :option, :statement, :step, :sink, :branch
     end
 
-    class Declaration < Element
-    end
-
-    class Node < Element
-    end
-
     module Evaluable
       def evaluate(context)
         context.instance_eval(expression)
       end
     end
 
-    class Metadata < Declaration
+    class Metadata < Node
       construct_with :key, :value
       def_true :metadata
     end

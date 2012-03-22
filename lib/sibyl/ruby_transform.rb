@@ -1,9 +1,9 @@
 require "parslet"
-require "sibyl/unit"
+require "sibyl/nodes"
 
 module Sibyl
   class RubyTransform < Parslet::Transform
-    include Unit
+    include Nodes
 
     rule(text: simple(:x)) { x.to_s }
     rule(numeric: simple(:x)) { x.to_i }
@@ -47,4 +47,3 @@ module Sibyl
     }
   end
 end
-
