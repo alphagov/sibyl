@@ -1,13 +1,13 @@
 require "common"
 require "sibyl/parser"
-require "sibyl/ruby_transform"
+require "sibyl/transform/ruby"
 require "sibyl/errors"
 require "ostruct"
 
 describe "Step" do
   def ruby(source)
     parser = Sibyl::Parser.new
-    transform = Sibyl::RubyTransform.new
+    transform = Sibyl::Transform::Ruby.new
     transform.apply(parser.parse(source)).first
   end
 

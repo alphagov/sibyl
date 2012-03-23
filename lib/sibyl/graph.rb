@@ -1,6 +1,6 @@
 require "sibyl/errors"
 require "sibyl/parser"
-require "sibyl/ruby_transform"
+require "sibyl/transform/ruby"
 require "tsort"
 
 module Sibyl
@@ -98,7 +98,7 @@ module Sibyl
 
     def parse(source)
       parser = Sibyl::Parser.new
-      transform = Sibyl::RubyTransform.new
+      transform = Sibyl::Transform::Ruby.new
       transform.apply(parser.parse(source))
     end
 

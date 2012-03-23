@@ -1,11 +1,11 @@
 require "common"
 require "sibyl/parser"
-require "sibyl/ruby_transform"
+require "sibyl/transform/ruby"
 
 describe "Ruby Transform" do
   def ruby(source)
     parser = Sibyl::Parser.new
-    transform = Sibyl::RubyTransform.new
+    transform = Sibyl::Transform::Ruby.new
     transform.apply(parser.parse(source)).first
   end
 
