@@ -6,6 +6,7 @@ challenges with our current embedded Ruby implementations, specifically:
 
 * Verifying correctness: no cycles, dead ends, or unreachable nodes
 * Retaining readability and terseness
+* Facilitate proofing by showing all steps
 * Have some kind of form that we can share over an API
 
 It's named after the prophets of antiquity. Why Sibyl? Well, I could hardly
