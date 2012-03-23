@@ -1,0 +1,114 @@
+step multiple "describe your employment"
+  option full-time -> "ft entitlement basis"
+  option part-time -> "pt entitlement basis"
+  option shifts -> "sw entitlement basis"
+  option casual -> "casual hours worked"
+  option compressed -> "compressed hours/week"
+  option annualised -> "annualised hours/year"
+
+-- Full time
+
+step multiple "ft entitlement basis"
+  option full-year -> "ft full year days/week"
+  option part-year -> "ft part year date range"
+
+step multiple "ft full year days/week"
+  option "5"      -> "ft full year 5 days/week"
+  option "6-or-7" -> "ft full year 6 or 7 days/week"
+
+outcome "ft full year 5 days/week"
+outcome "ft full year 6 or 7 days/week"
+
+step date-range "ft part year date range"
+  set fraction_of_year { input.difference_in_days / 365.0 }
+  go -> "ft part year days/week"
+
+step number "ft part year days/week"
+  set h { 5.6 * input * fraction_of_year }
+  go -> "ft part year result"
+
+outcome "ft part year result"
+
+-- Part time
+
+step multiple "pt entitlement basis"
+  option full-year -> "pt full year days/week"
+  option part-year -> "pt part year date range"
+
+step number "pt full year days/week"
+  set h { 5.6 * input }
+  go -> "pt full year result"
+
+outcome "pt full year result"
+
+step date-range "pt part year date range"
+  set fraction_of_year { input.difference_in_days / 365.0 }
+  go -> "pt part year days/week"
+
+step number "pt part year days/week"
+  set h { 5.6 * input * fraction_of_year }
+  go -> "pt part year result"
+
+outcome "pt part year result"
+
+-- Shift worker
+
+step multiple "sw entitlement basis"
+  set p { 1 }
+  option full-year -> "sw shift length"
+  option part-year -> "sw part year date range"
+
+step date-range "sw part year date range"
+  set p { input.difference_in_days / 365.0 }
+  go -> "sw shift length"
+
+step number "sw shift length"
+  set w { input }
+  go -> "sw shifts per pattern"
+
+step number "sw shifts per pattern"
+  set x { input }
+  go -> "sw days in shift pattern"
+
+step number "sw days in shift pattern"
+  set y { input }
+  set z { (x * 7.0) / y }
+  set h { 5.6 * z * p }
+  go ->
+    if { p < 1.0 } -> "sw part year result"
+    otherwise -> "sw full year result"
+
+outcome "sw part year result"
+outcome "sw full year result"
+
+-- Casual or irregular hours
+
+step number "casual hours worked"
+  set h { (input * 5.6) / (52 - 5.6) }
+  go -> "casual result"
+
+outcome "casual result"
+
+-- Compressed hours
+
+step number "compressed hours/week"
+  set x { input }
+  set h { x * 5.6 }
+  go -> "compressed days/week"
+
+step number "compressed days/week"
+  set y { input }
+  set days { y / x }
+  go -> "compressed result"
+
+outcome "compressed result"
+
+-- Annualised hours
+
+step number "annualised hours/year"
+  set x { input }
+  set y { x / 46.4 }
+  set h { 5.6 * y }
+  go -> "annualised result"
+
+outcome "annualised result"
