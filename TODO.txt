@@ -1,3 +1,5 @@
 * Expose expected input for use by web side
-* Syntax check expressions (use Ripper.lex from standard library?)
+* Syntax check expressions (use Ripper.lex from standard library? - No; this doesn't work)
 * Generate a complete l10n hash to be turned into YAML
+* Add additional input types (from current smart answers application)
+* Generate dot output to make a graph
