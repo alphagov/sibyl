@@ -1,2 +1,2 @@
-* Create input classes for input types to deserialise numbers, dates, etc.
 * Expose expected input for use by web side.
+* Syntax check expressions (use Ripper.lex from standard library?)

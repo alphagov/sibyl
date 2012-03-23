@@ -6,6 +6,7 @@ challenges with our current embedded Ruby implementations, specifically:
 
 * Verifying correctness: no cycles, dead ends, or unreachable nodes
 * Retaining readability and terseness
+* Have some kind of form that we can share over an API
 
 It's named after the prophets of antiquity. Why Sibyl? Well, I could hardly
 call it Oracle or Delphi, could I?
@@ -15,7 +16,9 @@ Syntax
 
 The syntax is relatively simple, and consists of metadata, steps, and outcomes.
 The grammar is specified in the file `lib/sibyl/parser.rb`; some examples
-follow:
+follow. Note that white space is not really significant (the indentation and
+line breaks are just a convention) and that anything between `{` and `}` is
+evaluated as Ruby against a context object.
 
     -- Metadata
     metadata need 1660
@@ -46,8 +49,13 @@ follow:
         otherwise -> "step i"
       option quux -> "step j"
 
+    -- Reject values that fail a logical test
+    step number "step k"
+      reject { input.odd? }
+      go -> "step l"
+
     -- Define final steps
-    outcome "step j"
+    outcome "step l"
 
 Usage
 -----
@@ -56,3 +64,14 @@ Usage
     graph = Sibyl::Graph.new(source)
     graph.validate! # raises an exception if the graph is incorrect
     step = graph.walk(["yes", "a", "1"])
+
+Validation
+----------
+
+Validation checks that:
+
+* There are steps
+* Each step is valid
+* No step is unreachable
+* Every possible exit leads somewhere
+* The graph is acyclic
