@@ -64,7 +64,7 @@ Usage
     require "sibyl/graph"
     graph = Sibyl::Graph.new(source)
     graph.validate! # raises an exception if the graph is incorrect
-    step = graph.walk(["yes", "a", "1"])
+    step = graph.at(["yes", "a", "1"])
 
 Validation
 ----------
