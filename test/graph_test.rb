@@ -35,7 +35,7 @@ describe "Graph validation" do
     })
 
     assert_equal "How old are you?", g.at(["yes"]).name
-    assert_equal "Adult", g.at(["yes", 19]).name
+    assert_equal "Adult", g.at(["yes", "19"]).name
   end
 
   it "should raise an exception when inputs exceed steps" do
@@ -46,7 +46,7 @@ describe "Graph validation" do
     })
 
     assert_raises Sibyl::InvalidInput do
-      g.at([1, 2])
+      g.at(["1", "2"])
     end
   end
 end

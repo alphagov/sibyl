@@ -1,4 +1,5 @@
 require "sibyl/errors"
+require "sibyl/input"
 
 module Sibyl
   module Nodes
@@ -72,7 +73,7 @@ module Sibyl
       end
 
       def compute(input, context)
-        context.input = input
+        context.input = InputHandler.deserialize(type, input)
         statements.each do |s|
           s.execute(context)
         end
