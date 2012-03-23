@@ -44,7 +44,7 @@ follow:
         if { something? } -> "step g"
         if { something_else? } -> "step h"
         otherwise -> "step i"
-      option quuz -> "step j"
+      option quux -> "step j"
 
     -- Define final steps
     outcome "step j"
