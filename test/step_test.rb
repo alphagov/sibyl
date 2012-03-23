@@ -99,7 +99,7 @@ describe "Step" do
 
   it "should compute exit for a multiple choice step" do
     step = ruby(%{
-      step number a
+      step multiple a
         option foo -> b
         option bar -> c
     })
@@ -110,7 +110,7 @@ describe "Step" do
 
   it "should compute exit for a multiple choice step with logic" do
     step = ruby(%{
-      step number a
+      step multiple a
         option foo ->
           if { 2 > 1 } -> b
           otherwise -> c
