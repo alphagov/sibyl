@@ -1,2 +1,3 @@
-* Expose expected input for use by web side.
+* Expose expected input for use by web side
 * Syntax check expressions (use Ripper.lex from standard library?)
+* Generate a complete l10n hash to be turned into YAML
